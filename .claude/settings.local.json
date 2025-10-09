@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run seed-demo:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(npm install:*)",
+      "Bash(timeout:*)",
+      "Bash(curl:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
