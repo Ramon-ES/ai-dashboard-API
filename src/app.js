@@ -21,7 +21,7 @@ const userRoutes = require('./routes/users');
 const companyRoutes = require('./routes/companies');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3004;
 
 // Middleware
 app.use(helmet()); // Security headers
