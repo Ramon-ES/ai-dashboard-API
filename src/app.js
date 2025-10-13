@@ -49,25 +49,26 @@ app.use((req, res, next) => {
   next();
 });
 
-// Custom middleware to handle swagger-ui trailing slash redirects with BASE_PATH
-const swaggerRedirectMiddleware = (path) => (req, res, next) => {
-  // If accessing without trailing slash, redirect with BASE_PATH preserved
-  if (req.path === path && !req.path.endsWith('/')) {
-    const redirectPath = BASE_PATH ? `${BASE_PATH}${path}/` : `${path}/`;
-    return res.redirect(redirectPath);
-  }
-  next();
-};
-
 // Client API Documentation (public - for external clients)
-app.use('/api-docs/client', swaggerRedirectMiddleware('/api-docs/client'), swaggerUi.serve, swaggerUi.setup(swaggerSpecClient, {
+// Handle trailing slash redirect manually to preserve BASE_PATH
+app.get('/api-docs/client', (req, res) => {
+  const redirectPath = BASE_PATH ? `${BASE_PATH}/api-docs/client/` : '/api-docs/client/';
+  res.redirect(redirectPath);
+});
+
+app.use('/api-docs/client/', swaggerUi.serveFiles(swaggerSpecClient, {}), swaggerUi.setup(swaggerSpecClient, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Client Documentation',
   customfavIcon: '/favicon.ico'
 }));
 
 // Internal API Documentation (for frontend developers - all endpoints)
-app.use('/api-docs/internal', swaggerRedirectMiddleware('/api-docs/internal'), swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+app.get('/api-docs/internal', (req, res) => {
+  const redirectPath = BASE_PATH ? `${BASE_PATH}/api-docs/internal/` : '/api-docs/internal/';
+  res.redirect(redirectPath);
+});
+
+app.use('/api-docs/internal/', swaggerUi.serveFiles(swaggerSpec, {}), swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Internal Documentation',
   customfavIcon: '/favicon.ico'
