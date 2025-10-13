@@ -324,12 +324,85 @@ const mySchema = {
 };
 ```
 
+## Production Deployment (EC2/VPS)
+
+### Environment Variables Setup
+
+**IMPORTANT: Never commit `firebase-service-account.json` to git.** Instead, use environment variables for production:
+
+1. **On your EC2 server, create a `.env` file:**
+
+```bash
+nano .env
+```
+
+2. **Add your Firebase credentials** (from the JSON file):
+
+```env
+# Firebase Configuration (from firebase-service-account.json)
+FIREBASE_PROJECT_ID=enversed-ai-dashboard
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@enversed-ai-dashboard.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSj...\n-----END PRIVATE KEY-----\n"
+FIREBASE_STORAGE_BUCKET=enversed-ai-dashboard.appspot.com
+
+# Server Configuration
+PORT=3004
+NODE_ENV=production
+
+ALLOWED_ORIGINS=https://yourdomain.com
+```
+
+**Note:** The private key must include the `\n` newlines as shown. Copy the entire key from your JSON file.
+
+3. **Secure the `.env` file:**
+
+```bash
+chmod 600 .env
+```
+
+4. **Start the server:**
+
+```bash
+npm install
+npm start
+# or with pm2
+pm2 start npm --name "aidashboard-api" -- start
+```
+
+The server will automatically use environment variables if they're present (see src/config/firebase.js:8-17).
+
+### Alternative: Using Service Account File in Production
+
+If you prefer using the JSON file on the server (less secure):
+
+1. **Copy the file to the server** (use SCP, not git):
+```bash
+scp firebase-service-account.json ec2-user@your-server:/home/ec2-user/ai-dashboard-API/
+```
+
+2. **Secure the file:**
+```bash
+chmod 600 firebase-service-account.json
+```
+
+3. **Set only the storage bucket in `.env`:**
+```env
+FIREBASE_STORAGE_BUCKET=enversed-ai-dashboard.appspot.com
+PORT=3004
+```
+
 ## Troubleshooting
 
 ### Firebase Connection Issues
-- Verify `firebase-service-account.json` is in root directory
-- Check Firebase project ID matches
-- Ensure Firestore and Storage are enabled
+- Verify environment variables are set correctly in `.env`
+- Check that `FIREBASE_PRIVATE_KEY` includes `\n` for newlines
+- Ensure Firebase project ID matches your Firebase console
+- Verify Firestore and Storage are enabled in Firebase console
+
+### Module Not Found: firebase-service-account.json
+- This means you're missing environment variables in production
+- Set `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, and `FIREBASE_PRIVATE_KEY` in `.env`
+- Or copy the JSON file to the server (less secure)
 
 ### Authentication Errors
 - Verify user document exists in `users` collection with `companyId`

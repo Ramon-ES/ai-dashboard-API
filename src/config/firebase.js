@@ -4,8 +4,16 @@ require('dotenv').config();
 // Initialize Firebase Admin SDK
 const initializeFirebase = () => {
   try {
+    // Debug: Check which environment variables are present
+    console.log('Checking Firebase environment variables...');
+    console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID ? 'SET' : 'MISSING');
+    console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL ? 'SET' : 'MISSING');
+    console.log('FIREBASE_PRIVATE_KEY:', process.env.FIREBASE_PRIVATE_KEY ? 'SET (length: ' + process.env.FIREBASE_PRIVATE_KEY.length + ')' : 'MISSING');
+    console.log('FIREBASE_STORAGE_BUCKET:', process.env.FIREBASE_STORAGE_BUCKET ? 'SET' : 'MISSING');
+
     // Option 1: Using environment variables (recommended for production)
     if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
+      console.log('Initializing Firebase with environment variables...');
       admin.initializeApp({
         credential: admin.credential.cert({
           projectId: process.env.FIREBASE_PROJECT_ID,
@@ -14,10 +22,11 @@ const initializeFirebase = () => {
         }),
         storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
       });
-      console.log('Firebase initialized with environment variables');
+      console.log('Firebase initialized successfully with environment variables');
     }
     // Option 2: Using service account file (for development)
     else {
+      console.log('Environment variables not complete, attempting to use service account file...');
       const serviceAccount = require('../../firebase-service-account.json');
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
