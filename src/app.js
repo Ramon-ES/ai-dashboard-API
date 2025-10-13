@@ -70,10 +70,12 @@ app.use((req, res, next) => {
       console.log('Original Location:', value);
       console.log('BASE_PATH:', BASE_PATH);
 
-      // If it's a relative path and we have a BASE_PATH, prepend it
-      if (value.startsWith('/') && !value.startsWith('//') && BASE_PATH) {
+      // If it's a relative path and we have a BASE_PATH, prepend it (but only if not already there)
+      if (value.startsWith('/') && !value.startsWith('//') && BASE_PATH && !value.startsWith(BASE_PATH)) {
         value = BASE_PATH + value;
         console.log('Modified Location:', value);
+      } else {
+        console.log('Location already has BASE_PATH or is absolute, not modifying');
       }
       console.log('=== END LOCATION DEBUG ===');
     }
