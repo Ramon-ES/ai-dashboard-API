@@ -65,16 +65,16 @@ app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 
 // Redirect root to api-docs
 app.get('/', (req, res) => {
-  res.redirect(`${BASE_PATH}/api-docs/client`);
+  res.redirect('/api-docs/client');
 });
 
 // Redirect /api-docs and /api-docs/ to client documentation
 app.get('/api-docs/', (req, res) => {
-  res.redirect(`${BASE_PATH}/api-docs/client`);
+  res.redirect('/api-docs/client');
 });
 
 app.get('/api-docs', (req, res) => {
-  res.redirect(`${BASE_PATH}/api-docs/client`);
+  res.redirect('/api-docs/client');
 });
 
 // OpenAPI JSON endpoints
