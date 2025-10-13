@@ -95,14 +95,20 @@ app.use((req, res, next) => {
 app.use('/api-docs/client', swaggerUi.serve, swaggerUi.setup(swaggerSpecClient, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Client Documentation',
-  customfavIcon: '/favicon.ico'
+  customfavIcon: '/favicon.ico',
+  swaggerOptions: {
+    url: `${BASE_PATH}/api-docs/client.json`
+  }
 }));
 
 // Internal API Documentation (for frontend developers - all endpoints)
 app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Internal Documentation',
-  customfavIcon: '/favicon.ico'
+  customfavIcon: '/favicon.ico',
+  swaggerOptions: {
+    url: `${BASE_PATH}/api-docs/internal.json`
+  }
 }));
 
 // Handle base path without trailing slash (nginx passes this through without stripping)
