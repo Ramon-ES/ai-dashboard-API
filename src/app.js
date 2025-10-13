@@ -50,46 +50,46 @@ app.use((req, res, next) => {
 });
 
 // Client API Documentation (public - for external clients)
-app.use(`${BASE_PATH}/api-docs/client`, swaggerUi.serve, swaggerUi.setup(swaggerSpecClient, {
+app.use('/api-docs/client', swaggerUi.serve, swaggerUi.setup(swaggerSpecClient, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Client Documentation',
   customfavIcon: '/favicon.ico'
 }));
 
 // Internal API Documentation (for frontend developers - all endpoints)
-app.use(`${BASE_PATH}/api-docs/internal`, swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Internal Documentation',
   customfavIcon: '/favicon.ico'
 }));
 
 // Redirect root to api-docs
-app.get(`${BASE_PATH}/`, (req, res) => {
+app.get('/', (req, res) => {
   res.redirect(`${BASE_PATH}/api-docs/client`);
 });
 
 // Redirect /api-docs and /api-docs/ to client documentation
-app.get(`${BASE_PATH}/api-docs/`, (req, res) => {
+app.get('/api-docs/', (req, res) => {
   res.redirect(`${BASE_PATH}/api-docs/client`);
 });
 
-app.get(`${BASE_PATH}/api-docs`, (req, res) => {
+app.get('/api-docs', (req, res) => {
   res.redirect(`${BASE_PATH}/api-docs/client`);
 });
 
 // OpenAPI JSON endpoints
-app.get(`${BASE_PATH}/api-docs/client.json`, (req, res) => {
+app.get('/api-docs/client.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpecClient);
 });
 
-app.get(`${BASE_PATH}/api-docs/internal.json`, (req, res) => {
+app.get('/api-docs/internal.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
 
 // Health check endpoint
-app.get(`${BASE_PATH}/health`, (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
     success: true,
     message: 'API server is running',
@@ -98,15 +98,15 @@ app.get(`${BASE_PATH}/health`, (req, res) => {
 });
 
 // API Routes
-app.use(`${BASE_PATH}/auth`, authRoutes);
-app.use(`${BASE_PATH}/api/schema`, schemaRoutes);
-app.use(`${BASE_PATH}/api/companies`, companyRoutes);
-app.use(`${BASE_PATH}/api/users`, userRoutes);
-app.use(`${BASE_PATH}/api/scenarios`, scenarioRoutes);
-app.use(`${BASE_PATH}/api/characters`, characterRoutes);
-app.use(`${BASE_PATH}/api/dialogues`, dialogueRoutes);
-app.use(`${BASE_PATH}/api/environments`, environmentRoutes);
-app.use(`${BASE_PATH}/api/dashboard`, dashboardRoutes);
+app.use('/auth', authRoutes);
+app.use('/api/schema', schemaRoutes);
+app.use('/api/companies', companyRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/scenarios', scenarioRoutes);
+app.use('/api/characters', characterRoutes);
+app.use('/api/dialogues', dialogueRoutes);
+app.use('/api/environments', environmentRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // 404 handler
 app.use((req, res) => {
