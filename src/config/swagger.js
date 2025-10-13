@@ -15,12 +15,12 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3004',
-        description: 'Development server',
-      },
-      {
         url: 'https://webplatform.enversedstudios.com/ai-dashboard',
         description: 'Production server',
+      },
+      {
+        url: 'http://localhost:3004',
+        description: 'Development server',
       },
     ],
     components: {
