@@ -300,7 +300,7 @@ const options = {
   },
   // Only include client-facing endpoints (read-only)
   apis: [
-    './src/docs/client-endpoints.js',
+    `${__dirname}/../docs/client-endpoints.js`,
   ],
 };
 

@@ -316,15 +316,15 @@ const options = {
   },
   // Include ALL routes for internal docs
   apis: [
-    './src/routes/auth.js',
-    './src/routes/scenarios.js',
-    './src/routes/characters.js',
-    './src/routes/dialogues.js',
-    './src/routes/environments.js',
-    './src/routes/users.js',
-    './src/routes/companies.js',
-    './src/routes/dashboard.js',
-    './src/routes/schema.js',
+    `${__dirname}/../routes/auth.js`,
+    `${__dirname}/../routes/scenarios.js`,
+    `${__dirname}/../routes/characters.js`,
+    `${__dirname}/../routes/dialogues.js`,
+    `${__dirname}/../routes/environments.js`,
+    `${__dirname}/../routes/users.js`,
+    `${__dirname}/../routes/companies.js`,
+    `${__dirname}/../routes/dashboard.js`,
+    `${__dirname}/../routes/schema.js`,
   ]
 };
 
