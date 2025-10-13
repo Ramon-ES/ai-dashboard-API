@@ -48,10 +48,16 @@ app.use((req, res, next) => {
     let redirectUrl = url || statusOrUrl;
     const status = url ? statusOrUrl : 302;
 
+    console.log('=== REDIRECT DEBUG ===');
+    console.log('Original redirectUrl:', redirectUrl);
+    console.log('BASE_PATH:', BASE_PATH);
+
     // If it's a relative path (starts with /) and we have a BASE_PATH, prepend it
     if (typeof redirectUrl === 'string' && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//') && BASE_PATH) {
       redirectUrl = BASE_PATH + redirectUrl;
+      console.log('Modified redirectUrl:', redirectUrl);
     }
+    console.log('=== END REDIRECT DEBUG ===');
 
     return originalRedirect(status, redirectUrl);
   };
