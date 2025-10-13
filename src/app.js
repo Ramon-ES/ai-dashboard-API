@@ -50,38 +50,18 @@ app.use((req, res, next) => {
 });
 
 // Client API Documentation (public - for external clients)
-app.use('/api-docs/client', swaggerUi.serveFiles(swaggerSpecClient), (req, res, next) => {
-  // Update swagger spec URLs to include base path
-  const spec = { ...swaggerSpecClient };
-  if (req.basePath) {
-    spec.servers = [{ url: req.basePath }];
-  }
-  swaggerUi.setup(spec, {
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'AI Dashboard API - Client Documentation',
-    customfavIcon: '/favicon.ico',
-    swaggerOptions: {
-      url: req.basePath ? `${req.basePath}/api-docs/client.json` : '/api-docs/client.json'
-    }
-  })(req, res, next);
-});
+app.use('/api-docs/client', swaggerUi.serve, swaggerUi.setup(swaggerSpecClient, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'AI Dashboard API - Client Documentation',
+  customfavIcon: '/favicon.ico'
+}));
 
 // Internal API Documentation (for frontend developers - all endpoints)
-app.use('/api-docs/internal', swaggerUi.serveFiles(swaggerSpec), (req, res, next) => {
-  // Update swagger spec URLs to include base path
-  const spec = { ...swaggerSpec };
-  if (req.basePath) {
-    spec.servers = [{ url: req.basePath }];
-  }
-  swaggerUi.setup(spec, {
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'AI Dashboard API - Internal Documentation',
-    customfavIcon: '/favicon.ico',
-    swaggerOptions: {
-      url: req.basePath ? `${req.basePath}/api-docs/internal.json` : '/api-docs/internal.json'
-    }
-  })(req, res, next);
-});
+app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'AI Dashboard API - Internal Documentation',
+  customfavIcon: '/favicon.ico'
+}));
 
 // Redirect root to api-docs
 app.get('/', (req, res) => {
