@@ -19,7 +19,7 @@ const options = {
         description: 'Development server',
       },
       {
-        url: 'https://your-production-api-url.com',
+        url: 'https://webplatform.enversedstudios.com/ai-dashboard',
         description: 'Production server',
       },
     ],
