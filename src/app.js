@@ -105,6 +105,13 @@ app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customfavIcon: '/favicon.ico'
 }));
 
+// Handle base path without trailing slash (nginx passes this through without stripping)
+if (BASE_PATH) {
+  app.get(BASE_PATH, (req, res) => {
+    res.redirect(BASE_PATH + '/');
+  });
+}
+
 // Redirect root to api-docs
 app.get('/', (req, res) => {
   res.redirect('/api-docs/client');
