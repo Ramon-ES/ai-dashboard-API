@@ -56,16 +56,10 @@ app.use((req, res, next) => {
     let redirectUrl = url || statusOrUrl;
     const status = url ? statusOrUrl : 302;
 
-    console.log('=== REDIRECT DEBUG ===');
-    console.log('Original redirectUrl:', redirectUrl);
-    console.log('BASE_PATH:', BASE_PATH);
-
     // If it's a relative path (starts with /) and we have a BASE_PATH, prepend it
     if (typeof redirectUrl === 'string' && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//') && BASE_PATH) {
       redirectUrl = BASE_PATH + redirectUrl;
-      console.log('Modified redirectUrl:', redirectUrl);
     }
-    console.log('=== END REDIRECT DEBUG ===');
 
     return originalRedirect(status, redirectUrl);
   };
@@ -74,18 +68,10 @@ app.use((req, res, next) => {
   const originalSetHeader = res.setHeader.bind(res);
   res.setHeader = function(name, value) {
     if (name.toLowerCase() === 'location' && typeof value === 'string') {
-      console.log('=== LOCATION HEADER DEBUG ===');
-      console.log('Original Location:', value);
-      console.log('BASE_PATH:', BASE_PATH);
-
       // If it's a relative path and we have a BASE_PATH, prepend it (but only if not already there)
       if (value.startsWith('/') && !value.startsWith('//') && BASE_PATH && !value.startsWith(BASE_PATH)) {
         value = BASE_PATH + value;
-        console.log('Modified Location:', value);
-      } else {
-        console.log('Location already has BASE_PATH or is absolute, not modifying');
       }
-      console.log('=== END LOCATION DEBUG ===');
     }
     return originalSetHeader(name, value);
   };
@@ -103,14 +89,32 @@ app.use((req, res, next) => {
 app.use('/api-docs/client', swaggerUi.serve, swaggerUi.setup(swaggerSpecClient, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Client Documentation',
-  customfavIcon: '/favicon.ico'
+  customfavIcon: '/favicon.ico',
+  swaggerOptions: {
+    displayOperationId: false,
+    displayRequestDuration: true,
+    docExpansion: 'list',
+    filter: true,
+    showExtensions: true,
+    showCommonExtensions: true,
+    tryItOutEnabled: true
+  }
 }));
 
 // Internal API Documentation (for frontend developers - all endpoints)
 app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Internal Documentation',
-  customfavIcon: '/favicon.ico'
+  customfavIcon: '/favicon.ico',
+  swaggerOptions: {
+    displayOperationId: false,
+    displayRequestDuration: true,
+    docExpansion: 'list',
+    filter: true,
+    showExtensions: true,
+    showCommonExtensions: true,
+    tryItOutEnabled: true
+  }
 }));
 
 // Handle base path without trailing slash (nginx passes this through without stripping)
