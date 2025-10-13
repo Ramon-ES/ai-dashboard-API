@@ -36,7 +36,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Serve static files (for docs landing page)
 app.use(express.static('public'));
 
-// Middleware to override res.redirect to include BASE_PATH
+// Middleware to override res.redirect and res.setHeader to include BASE_PATH
 app.use((req, res, next) => {
   // Get base path from nginx header or environment variable
   req.basePath = req.headers['x-base-path'] || BASE_PATH || '';
@@ -60,6 +60,24 @@ app.use((req, res, next) => {
     console.log('=== END REDIRECT DEBUG ===');
 
     return originalRedirect(status, redirectUrl);
+  };
+
+  // Override res.setHeader to intercept Location headers (used by swagger-ui)
+  const originalSetHeader = res.setHeader.bind(res);
+  res.setHeader = function(name, value) {
+    if (name.toLowerCase() === 'location' && typeof value === 'string') {
+      console.log('=== LOCATION HEADER DEBUG ===');
+      console.log('Original Location:', value);
+      console.log('BASE_PATH:', BASE_PATH);
+
+      // If it's a relative path and we have a BASE_PATH, prepend it
+      if (value.startsWith('/') && !value.startsWith('//') && BASE_PATH) {
+        value = BASE_PATH + value;
+        console.log('Modified Location:', value);
+      }
+      console.log('=== END LOCATION DEBUG ===');
+    }
+    return originalSetHeader(name, value);
   };
 
   next();
