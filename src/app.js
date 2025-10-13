@@ -69,11 +69,17 @@ app.get('/', (req, res) => {
   console.log('BASE_PATH from env:', BASE_PATH);
   console.log('req.basePath:', req.basePath);
   console.log('Original URL:', req.originalUrl);
-  console.log('Request headers:', JSON.stringify(req.headers, null, 2));
-  const redirectPath = `${BASE_PATH}/api-docs/client`;
-  console.log('Redirecting to:', redirectPath);
+  console.log('Host header:', req.headers.host);
+  console.log('Protocol:', req.protocol);
+
+  // Build full URL with protocol and domain
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+  const host = req.headers.host;
+  const fullUrl = `${protocol}://${host}${BASE_PATH}/api-docs/client`;
+
+  console.log('Redirecting to full URL:', fullUrl);
   console.log('=== END DEBUG ===');
-  res.redirect(301, redirectPath);
+  res.redirect(301, fullUrl);
 });
 
 // Redirect /api-docs and /api-docs/ to client documentation
@@ -82,10 +88,15 @@ app.get('/api-docs/', (req, res) => {
   console.log('BASE_PATH from env:', BASE_PATH);
   console.log('req.basePath:', req.basePath);
   console.log('Original URL:', req.originalUrl);
-  const redirectPath = `${BASE_PATH}/api-docs/client`;
-  console.log('Redirecting to:', redirectPath);
+
+  // Build full URL with protocol and domain
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+  const host = req.headers.host;
+  const fullUrl = `${protocol}://${host}${BASE_PATH}/api-docs/client`;
+
+  console.log('Redirecting to full URL:', fullUrl);
   console.log('=== END DEBUG ===');
-  res.redirect(301, redirectPath);
+  res.redirect(301, fullUrl);
 });
 
 app.get('/api-docs', (req, res) => {
@@ -93,10 +104,15 @@ app.get('/api-docs', (req, res) => {
   console.log('BASE_PATH from env:', BASE_PATH);
   console.log('req.basePath:', req.basePath);
   console.log('Original URL:', req.originalUrl);
-  const redirectPath = `${BASE_PATH}/api-docs/client`;
-  console.log('Redirecting to:', redirectPath);
+
+  // Build full URL with protocol and domain
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+  const host = req.headers.host;
+  const fullUrl = `${protocol}://${host}${BASE_PATH}/api-docs/client`;
+
+  console.log('Redirecting to full URL:', fullUrl);
   console.log('=== END DEBUG ===');
-  res.redirect(301, redirectPath);
+  res.redirect(301, fullUrl);
 });
 
 // OpenAPI JSON endpoints
