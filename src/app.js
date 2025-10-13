@@ -41,14 +41,37 @@ app.use((req, res, next) => {
   next();
 });
 
+// Redirect /ai-dashboard to /ai-dashboard/api-docs/client
+app.get('/ai-dashboard', (req, res) => {
+  res.redirect(301, '/ai-dashboard/api-docs/client');
+});
+
+// Redirect /ai-dashboard/api-docs to client documentation
+app.get('/ai-dashboard/api-docs', (req, res) => {
+  res.redirect(301, '/ai-dashboard/api-docs/client');
+});
+
 // Client API Documentation (public - for external clients)
-app.use('/api-docs/client', swaggerUi.serveFiles(swaggerSpecClient), swaggerUi.setup(swaggerSpecClient, {
+app.use('/ai-dashboard/api-docs/client', swaggerUi.serveFiles(swaggerSpecClient), swaggerUi.setup(swaggerSpecClient, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Client Documentation',
   customfavIcon: '/favicon.ico'
 }));
 
 // Internal API Documentation (for frontend developers - all endpoints)
+app.use('/ai-dashboard/api-docs/internal', swaggerUi.serveFiles(swaggerSpec), swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'AI Dashboard API - Internal Documentation',
+  customfavIcon: '/favicon.ico'
+}));
+
+// Legacy routes (for backward compatibility)
+app.use('/api-docs/client', swaggerUi.serveFiles(swaggerSpecClient), swaggerUi.setup(swaggerSpecClient, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'AI Dashboard API - Client Documentation',
+  customfavIcon: '/favicon.ico'
+}));
+
 app.use('/api-docs/internal', swaggerUi.serveFiles(swaggerSpec), swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Internal Documentation',
@@ -57,10 +80,21 @@ app.use('/api-docs/internal', swaggerUi.serveFiles(swaggerSpec), swaggerUi.setup
 
 // Redirect /api-docs to client documentation
 app.get('/api-docs', (req, res) => {
-  res.redirect('/api-docs/client');
+  res.redirect(301, '/api-docs/client');
 });
 
 // OpenAPI JSON endpoints
+app.get('/ai-dashboard/api-docs/client.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpecClient);
+});
+
+app.get('/ai-dashboard/api-docs/internal.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+// Legacy JSON endpoints (for backward compatibility)
 app.get('/api-docs/client.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpecClient);
