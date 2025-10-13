@@ -36,9 +36,16 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Serve static files (for docs landing page)
 app.use(express.static('public'));
 
+// Middleware to capture base path from nginx headers
+app.use((req, res, next) => {
+  // Get base path from nginx header or environment variable
+  req.basePath = req.headers['x-base-path'] || BASE_PATH || '';
+  next();
+});
+
 // Request logging middleware
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path} (Base: ${req.basePath})`);
   next();
 });
 
@@ -58,16 +65,16 @@ app.use('/api-docs/internal', swaggerUi.serveFiles(swaggerSpec), swaggerUi.setup
 
 // Redirect root to api-docs
 app.get('/', (req, res) => {
-  res.redirect(301, BASE_PATH + '/api-docs/client');
+  res.redirect(301, req.basePath + '/api-docs/client');
 });
 
 // Redirect /api-docs and /api-docs/ to client documentation
 app.get('/api-docs/', (req, res) => {
-  res.redirect(301, BASE_PATH + '/api-docs/client');
+  res.redirect(301, req.basePath + '/api-docs/client');
 });
 
 app.get('/api-docs', (req, res) => {
-  res.redirect(301, BASE_PATH + '/api-docs/client');
+  res.redirect(301, req.basePath + '/api-docs/client');
 });
 
 // OpenAPI JSON endpoints
