@@ -85,20 +85,20 @@ app.use('/api-docs/internal', swaggerUi.serveFiles(swaggerSpec), (req, res, next
 
 // Redirect root to api-docs
 app.get('/', (req, res) => {
-  const redirectPath = req.basePath ? `${req.basePath}/api-docs/client` : '/api-docs/client';
+  const redirectPath = `${BASE_PATH}/api-docs/client`;
   console.log(`Redirecting / to: ${redirectPath}`);
   res.redirect(301, redirectPath);
 });
 
 // Redirect /api-docs and /api-docs/ to client documentation
 app.get('/api-docs/', (req, res) => {
-  const redirectPath = req.basePath ? `${req.basePath}/api-docs/client` : '/api-docs/client';
+  const redirectPath = `${BASE_PATH}/api-docs/client`;
   console.log(`Redirecting /api-docs/ to: ${redirectPath}`);
   res.redirect(301, redirectPath);
 });
 
 app.get('/api-docs', (req, res) => {
-  const redirectPath = req.basePath ? `${req.basePath}/api-docs/client` : '/api-docs/client';
+  const redirectPath = `${BASE_PATH}/api-docs/client`;
   console.log(`Redirecting /api-docs to: ${redirectPath}`);
   res.redirect(301, redirectPath);
 });
