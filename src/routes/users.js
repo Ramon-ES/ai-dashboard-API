@@ -553,13 +553,38 @@ router.put('/me/password', authenticate, async (req, res) => {
 
     const userData = userDoc.data();
 
-    // Verify current password by trying to sign in
-    // Note: This is done via Firebase Admin SDK verification
+    // Verify current password using Firebase Auth REST API
     try {
-      // We can't verify the password directly with Admin SDK
-      // The client should verify current password on their side before calling this
-      // Or we update password directly (Firebase Admin SDK allows this)
+      const apiKey = process.env.FIREBASE_API_KEY;
+      if (!apiKey) {
+        throw new Error('FIREBASE_API_KEY not configured');
+      }
 
+      const verifyPasswordResponse = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: userData.email,
+            password: currentPassword,
+            returnSecureToken: false,
+          }),
+        }
+      );
+
+      if (!verifyPasswordResponse.ok) {
+        const errorData = await verifyPasswordResponse.json();
+        console.error('Password verification failed:', errorData);
+        return res.status(401).json({
+          success: false,
+          error: 'Current password is incorrect',
+        });
+      }
+
+      // Current password is correct, proceed with update
       await auth.updateUser(req.user.uid, {
         password: newPassword,
       });
