@@ -65,21 +65,37 @@ app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 
 // Redirect root to api-docs
 app.get('/', (req, res) => {
+  console.log('=== ROOT REDIRECT DEBUG ===');
+  console.log('BASE_PATH from env:', BASE_PATH);
+  console.log('req.basePath:', req.basePath);
+  console.log('Original URL:', req.originalUrl);
+  console.log('Request headers:', JSON.stringify(req.headers, null, 2));
   const redirectPath = `${BASE_PATH}/api-docs/client`;
-  console.log(`Redirecting / to: ${redirectPath}`);
+  console.log('Redirecting to:', redirectPath);
+  console.log('=== END DEBUG ===');
   res.redirect(301, redirectPath);
 });
 
 // Redirect /api-docs and /api-docs/ to client documentation
 app.get('/api-docs/', (req, res) => {
+  console.log('=== /api-docs/ REDIRECT DEBUG ===');
+  console.log('BASE_PATH from env:', BASE_PATH);
+  console.log('req.basePath:', req.basePath);
+  console.log('Original URL:', req.originalUrl);
   const redirectPath = `${BASE_PATH}/api-docs/client`;
-  console.log(`Redirecting /api-docs/ to: ${redirectPath}`);
+  console.log('Redirecting to:', redirectPath);
+  console.log('=== END DEBUG ===');
   res.redirect(301, redirectPath);
 });
 
 app.get('/api-docs', (req, res) => {
+  console.log('=== /api-docs REDIRECT DEBUG ===');
+  console.log('BASE_PATH from env:', BASE_PATH);
+  console.log('req.basePath:', req.basePath);
+  console.log('Original URL:', req.originalUrl);
   const redirectPath = `${BASE_PATH}/api-docs/client`;
-  console.log(`Redirecting /api-docs to: ${redirectPath}`);
+  console.log('Redirecting to:', redirectPath);
+  console.log('=== END DEBUG ===');
   res.redirect(301, redirectPath);
 });
 
