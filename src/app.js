@@ -108,7 +108,8 @@ app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 // Handle base path without trailing slash (nginx passes this through without stripping)
 if (BASE_PATH) {
   app.get(BASE_PATH, (req, res) => {
-    res.redirect(BASE_PATH + '/');
+    // Just redirect to root - middleware will add BASE_PATH automatically
+    res.redirect('/');
   });
 }
 
