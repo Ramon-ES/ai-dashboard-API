@@ -36,10 +36,26 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Serve static files (for docs landing page)
 app.use(express.static('public'));
 
-// Middleware to capture base path from nginx headers
+// Middleware to override res.redirect to include BASE_PATH
 app.use((req, res, next) => {
   // Get base path from nginx header or environment variable
   req.basePath = req.headers['x-base-path'] || BASE_PATH || '';
+
+  // Override res.redirect to automatically prepend BASE_PATH for relative redirects
+  const originalRedirect = res.redirect.bind(res);
+  res.redirect = function(statusOrUrl, url) {
+    // Handle both redirect(url) and redirect(status, url) forms
+    let redirectUrl = url || statusOrUrl;
+    const status = url ? statusOrUrl : 302;
+
+    // If it's a relative path (starts with /) and we have a BASE_PATH, prepend it
+    if (typeof redirectUrl === 'string' && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//') && BASE_PATH) {
+      redirectUrl = BASE_PATH + redirectUrl;
+    }
+
+    return originalRedirect(status, redirectUrl);
+  };
+
   next();
 });
 
@@ -50,25 +66,14 @@ app.use((req, res, next) => {
 });
 
 // Client API Documentation (public - for external clients)
-// Handle trailing slash redirect manually to preserve BASE_PATH
-app.get('/api-docs/client', (req, res) => {
-  const redirectPath = BASE_PATH ? `${BASE_PATH}/api-docs/client/` : '/api-docs/client/';
-  res.redirect(redirectPath);
-});
-
-app.use('/api-docs/client/', swaggerUi.serveFiles(swaggerSpecClient, {}), swaggerUi.setup(swaggerSpecClient, {
+app.use('/api-docs/client', swaggerUi.serve, swaggerUi.setup(swaggerSpecClient, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Client Documentation',
   customfavIcon: '/favicon.ico'
 }));
 
 // Internal API Documentation (for frontend developers - all endpoints)
-app.get('/api-docs/internal', (req, res) => {
-  const redirectPath = BASE_PATH ? `${BASE_PATH}/api-docs/internal/` : '/api-docs/internal/';
-  res.redirect(redirectPath);
-});
-
-app.use('/api-docs/internal/', swaggerUi.serveFiles(swaggerSpec, {}), swaggerUi.setup(swaggerSpec, {
+app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Internal Documentation',
   customfavIcon: '/favicon.ico'
@@ -76,20 +81,16 @@ app.use('/api-docs/internal/', swaggerUi.serveFiles(swaggerSpec, {}), swaggerUi.
 
 // Redirect root to api-docs
 app.get('/', (req, res) => {
-  // For nginx proxy, we need to include BASE_PATH in redirect
-  const redirectPath = BASE_PATH ? `${BASE_PATH}/api-docs/client` : '/api-docs/client';
-  res.redirect(redirectPath);
+  res.redirect('/api-docs/client');
 });
 
 // Redirect /api-docs and /api-docs/ to client documentation
 app.get('/api-docs/', (req, res) => {
-  const redirectPath = BASE_PATH ? `${BASE_PATH}/api-docs/client` : '/api-docs/client';
-  res.redirect(redirectPath);
+  res.redirect('/api-docs/client');
 });
 
 app.get('/api-docs', (req, res) => {
-  const redirectPath = BASE_PATH ? `${BASE_PATH}/api-docs/client` : '/api-docs/client';
-  res.redirect(redirectPath);
+  res.redirect('/api-docs/client');
 });
 
 // OpenAPI JSON endpoints
