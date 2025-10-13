@@ -86,7 +86,7 @@ app.use((req, res, next) => {
 });
 
 // Client API Documentation (public - for external clients)
-app.use('/api-docs/client', swaggerUi.serve, swaggerUi.setup(swaggerSpecClient, {
+app.use('/api-docs/client', swaggerUi.serveFiles(swaggerSpecClient, {}), swaggerUi.setup(swaggerSpecClient, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Client Documentation',
   customfavIcon: '/favicon.ico',
@@ -102,7 +102,7 @@ app.use('/api-docs/client', swaggerUi.serve, swaggerUi.setup(swaggerSpecClient, 
 }));
 
 // Internal API Documentation (for frontend developers - all endpoints)
-app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+app.use('/api-docs/internal', swaggerUi.serveFiles(swaggerSpec, {}), swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'AI Dashboard API - Internal Documentation',
   customfavIcon: '/favicon.ico',
