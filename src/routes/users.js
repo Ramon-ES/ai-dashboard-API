@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const fetch = require('node-fetch');
 const { auth, db } = require('../config/firebase');
 const { authenticate } = require('../middleware/auth');
 const { requireCompanyAccess, requireRole } = require('../middleware/rbac');

@@ -97,7 +97,10 @@ app.use('/api-docs/client', swaggerUi.serveFiles(swaggerSpecClient, {}), swagger
     filter: true,
     showExtensions: true,
     showCommonExtensions: true,
-    tryItOutEnabled: true
+    tryItOutEnabled: true,
+    defaultModelsExpandDepth: 1,
+    defaultModelExpandDepth: 1,
+    persistAuthorization: true
   }
 }));
 
@@ -113,7 +116,10 @@ app.use('/api-docs/internal', swaggerUi.serveFiles(swaggerSpec, {}), swaggerUi.s
     filter: true,
     showExtensions: true,
     showCommonExtensions: true,
-    tryItOutEnabled: true
+    tryItOutEnabled: true,
+    defaultModelsExpandDepth: 1,
+    defaultModelExpandDepth: 1,
+    persistAuthorization: true
   }
 }));
 
