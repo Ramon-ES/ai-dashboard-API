@@ -296,6 +296,10 @@ const options = {
         name: 'Environments',
         description: 'View virtual environments',
       },
+      {
+        name: 'Users',
+        description: 'User account management',
+      },
     ],
   },
   // Only include client-facing endpoints (read-only)

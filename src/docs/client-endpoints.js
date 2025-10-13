@@ -461,3 +461,108 @@
  *       404:
  *         description: Environment not found
  */
+
+/**
+ * @swagger
+ * /api/users/me/password:
+ *   put:
+ *     summary: Change your own password
+ *     description: Update your account password
+ *     tags: [Users]
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token obtained from /auth/login
+ *         example: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjZmNzI1NDEwM...
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 format: password
+ *                 example: oldPassword123
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 example: newPassword456
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Password updated successfully
+ *       400:
+ *         description: Invalid password or validation error
+ *       401:
+ *         description: Unauthorized or incorrect current password
+ */
+
+/**
+ * @swagger
+ * /api/users/{uid}/reset-password:
+ *   post:
+ *     summary: Reset user password (Admin only)
+ *     description: Reset a user's password and optionally send them a password reset email
+ *     tags: [Users]
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token obtained from /auth/login (Admin role required)
+ *         example: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjZmNzI1NDEwM...
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID to reset password for
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               sendEmail:
+ *                 type: boolean
+ *                 example: true
+ *                 description: Whether to send password reset email to the user
+ *     responses:
+ *       200:
+ *         description: Password reset successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Password reset link sent
+ *       403:
+ *         description: Insufficient permissions (Admin role required)
+ *       404:
+ *         description: User not found
+ */
