@@ -1,5 +1,8 @@
 const admin = require('firebase-admin');
-require('dotenv').config();
+const path = require('path');
+
+// Load .env from project root (two levels up from this file)
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 // Initialize Firebase Admin SDK
 const initializeFirebase = () => {
