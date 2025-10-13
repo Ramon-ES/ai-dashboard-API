@@ -25,7 +25,15 @@ const PORT = process.env.PORT || 3004;
 const BASE_PATH = process.env.BASE_PATH || ''; // e.g., '/ai-dashboard'
 
 // Middleware
-app.use(helmet()); // Security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "script-src": ["'self'", "'unsafe-inline'"], // Allow inline scripts for Swagger UI
+      "style-src": ["'self'", "'unsafe-inline'", "https:"], // Already allowing unsafe-inline for styles
+    },
+  },
+})); // Security headers
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
   credentials: true,
