@@ -65,16 +65,20 @@ app.use('/api-docs/internal', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 
 // Redirect root to api-docs
 app.get('/', (req, res) => {
-  res.redirect('/api-docs/client');
+  // For nginx proxy, we need to include BASE_PATH in redirect
+  const redirectPath = BASE_PATH ? `${BASE_PATH}/api-docs/client` : '/api-docs/client';
+  res.redirect(redirectPath);
 });
 
 // Redirect /api-docs and /api-docs/ to client documentation
 app.get('/api-docs/', (req, res) => {
-  res.redirect('/api-docs/client');
+  const redirectPath = BASE_PATH ? `${BASE_PATH}/api-docs/client` : '/api-docs/client';
+  res.redirect(redirectPath);
 });
 
 app.get('/api-docs', (req, res) => {
-  res.redirect('/api-docs/client');
+  const redirectPath = BASE_PATH ? `${BASE_PATH}/api-docs/client` : '/api-docs/client';
+  res.redirect(redirectPath);
 });
 
 // OpenAPI JSON endpoints
