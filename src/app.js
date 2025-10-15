@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const swaggerSpecClient = require('./config/swagger-client');
@@ -57,10 +58,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve static files (for docs landing page and analytics)
+const publicPath = path.join(__dirname, '..', 'public');
 if (BASE_PATH) {
-  app.use(BASE_PATH, express.static('public'));
+  app.use(BASE_PATH, express.static(publicPath));
 }
-app.use(express.static('public'));
+app.use(express.static(publicPath));
 
 // Middleware to override res.redirect and res.setHeader to include BASE_PATH
 app.use((req, res, next) => {
@@ -166,13 +168,15 @@ app.get('/api-docs', (req, res) => {
   res.redirect('/api-docs/client');
 });
 
-// Analytics dashboard (handle both with and without trailing slash)
+// Analytics dashboard - static file serving already handles this via express.static
+// But we add explicit routes to ensure it works even if static middleware doesn't catch it
+// Note: These routes will work after nginx strips the base path
 app.get('/analytics', (req, res) => {
-  res.sendFile('analytics-dashboard.html', { root: './public' });
+  res.sendFile(path.join(__dirname, '..', 'public', 'analytics-dashboard.html'));
 });
 
 app.get('/analytics/', (req, res) => {
-  res.sendFile('analytics-dashboard.html', { root: './public' });
+  res.sendFile(path.join(__dirname, '..', 'public', 'analytics-dashboard.html'));
 });
 
 // OpenAPI JSON endpoints
