@@ -5,7 +5,16 @@
       "Bash(firebase deploy:*)",
       "Bash(npm install:*)",
       "Bash(timeout:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(start msedge \"https://webplatform.enversedstudios.com/ai-dashboard/\")",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nFix Express server base path configuration for /ai-dashboard deployment\n\n- Configure all routes with BASE_PATH prefix to support deployment at /ai-dashboard\n- Update Swagger UI routes to include base path\n- Update API routes (/auth, /api/*) with base path\n- Update production server URLs in Swagger specs to include full path\n- Simplify redirect logic for root and /api-docs routes\n\nThis fixes 404 errors when accessing the app at https://webplatform.enversedstudios.com/ai-dashboard/\n\nNote: BASE_PATH=/ai-dashboard must be added to .env on the server\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(npm start)",
+      "Bash(node:*)",
+      "Bash(npx kill-port:*)",
+      "Bash(start msedge \"http://localhost:3004/analytics\")"
     ],
     "deny": [],
     "ask": []

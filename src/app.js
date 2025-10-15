@@ -9,6 +9,12 @@ require('dotenv').config();
 // Initialize Firebase
 require('./config/firebase');
 
+// Initialize Redis (async, non-blocking)
+const { initRedis } = require('./config/redis');
+initRedis().catch(err => {
+  console.warn('Continuing without Redis:', err.message);
+});
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const schemaRoutes = require('./routes/schema');
@@ -19,17 +25,26 @@ const environmentRoutes = require('./routes/environments');
 const dashboardRoutes = require('./routes/dashboard');
 const userRoutes = require('./routes/users');
 const companyRoutes = require('./routes/companies');
+const analyticsRoutes = require('./routes/analytics');
+
+// Import middleware
+const usageLogger = require('./middleware/usage-logger');
+const { apiLimiter, authLimiter, adminLimiter } = require('./middleware/rate-limiter');
 
 const app = express();
 const PORT = process.env.PORT || 3004;
 const BASE_PATH = process.env.BASE_PATH || ''; // e.g., '/ai-dashboard'
+
+// Trust proxy to get real client IP addresses (required when behind nginx)
+app.set('trust proxy', true);
 
 // Middleware
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": ["'self'", "'unsafe-inline'"], // Allow inline scripts for Swagger UI
+      "script-src": ["'self'", "'unsafe-inline'"], // Allow inline scripts for Swagger UI and Analytics
+      "script-src-attr": ["'unsafe-inline'"], // Allow inline event handlers (onclick, etc.) for Analytics dashboard
       "style-src": ["'self'", "'unsafe-inline'", "https:"], // Already allowing unsafe-inline for styles
     },
   },
@@ -84,6 +99,9 @@ app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path} (Base: ${req.basePath})`);
   next();
 });
+
+// Usage tracking middleware (logs API calls to Firestore)
+app.use(usageLogger);
 
 // Client API Documentation (public - for external clients)
 app.use('/api-docs/client', swaggerUi.serveFiles(swaggerSpecClient, {}), swaggerUi.setup(swaggerSpecClient, {
@@ -145,6 +163,11 @@ app.get('/api-docs', (req, res) => {
   res.redirect('/api-docs/client');
 });
 
+// Analytics dashboard
+app.get('/analytics', (req, res) => {
+  res.sendFile('analytics-dashboard.html', { root: './public' });
+});
+
 // OpenAPI JSON endpoints
 app.get('/api-docs/client.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
@@ -165,16 +188,17 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes
-app.use('/auth', authRoutes);
-app.use('/api/schema', schemaRoutes);
-app.use('/api/companies', companyRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/scenarios', scenarioRoutes);
-app.use('/api/characters', characterRoutes);
-app.use('/api/dialogues', dialogueRoutes);
-app.use('/api/environments', environmentRoutes);
-app.use('/api/dashboard', dashboardRoutes);
+// API Routes with rate limiting
+app.use('/auth', authLimiter, authRoutes);
+app.use('/api/analytics', adminLimiter, analyticsRoutes);
+app.use('/api/schema', apiLimiter, schemaRoutes);
+app.use('/api/companies', apiLimiter, companyRoutes);
+app.use('/api/users', apiLimiter, userRoutes);
+app.use('/api/scenarios', apiLimiter, scenarioRoutes);
+app.use('/api/characters', apiLimiter, characterRoutes);
+app.use('/api/dialogues', apiLimiter, dialogueRoutes);
+app.use('/api/environments', apiLimiter, environmentRoutes);
+app.use('/api/dashboard', apiLimiter, dashboardRoutes);
 
 // 404 handler
 app.use((req, res) => {

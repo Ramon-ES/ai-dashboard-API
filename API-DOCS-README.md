@@ -90,7 +90,7 @@ This landing page lets you choose between:
 ### OpenAPI Spec
 The raw OpenAPI 3.0 specification is available at:
 ```
-http://localhost:3000/api-docs.json
+http://localhost:3004/api-docs.json
 ```
 
 You can import this into:
