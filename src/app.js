@@ -56,7 +56,10 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static files (for docs landing page)
+// Serve static files (for docs landing page and analytics)
+if (BASE_PATH) {
+  app.use(BASE_PATH, express.static('public'));
+}
 app.use(express.static('public'));
 
 // Middleware to override res.redirect and res.setHeader to include BASE_PATH
@@ -163,8 +166,12 @@ app.get('/api-docs', (req, res) => {
   res.redirect('/api-docs/client');
 });
 
-// Analytics dashboard
+// Analytics dashboard (handle both with and without trailing slash)
 app.get('/analytics', (req, res) => {
+  res.sendFile('analytics-dashboard.html', { root: './public' });
+});
+
+app.get('/analytics/', (req, res) => {
   res.sendFile('analytics-dashboard.html', { root: './public' });
 });
 
