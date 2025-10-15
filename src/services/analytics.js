@@ -440,6 +440,9 @@ const getDashboardStats = async (companyId, options = {}) => {
 
     let totalRequests = 0;
     let totalErrors = 0;
+    let authErrors = 0;
+    let clientErrors = 0;
+    let serverErrors = 0;
     let totalResponseTime = 0;
     const uniqueUsers = new Set();
     const uniqueEndpoints = new Set();
@@ -450,6 +453,15 @@ const getDashboardStats = async (companyId, options = {}) => {
 
       if (data.error) {
         totalErrors++;
+
+        // Count by error type
+        if (data.isAuthError || data.errorType === 'auth') {
+          authErrors++;
+        } else if (data.isServerError || data.errorType === 'server') {
+          serverErrors++;
+        } else if (data.isClientError || data.errorType === 'client') {
+          clientErrors++;
+        }
       }
 
       totalResponseTime += data.responseTime || 0;
@@ -461,12 +473,20 @@ const getDashboardStats = async (companyId, options = {}) => {
       uniqueEndpoints.add(data.baseEndpoint || data.endpoint);
     });
 
+    // Calculate rates excluding auth errors for meaningful error rate
+    const nonAuthErrors = serverErrors + (clientErrors - authErrors);
+    const meaningfulErrorRate = totalRequests > 0 ? ((nonAuthErrors / totalRequests) * 100).toFixed(2) + '%' : '0%';
+
     return {
       success: true,
       data: {
         totalRequests,
         totalErrors,
+        authErrors,
+        clientErrors,
+        serverErrors,
         errorRate: totalRequests > 0 ? ((totalErrors / totalRequests) * 100).toFixed(2) + '%' : '0%',
+        meaningfulErrorRate, // Error rate excluding auth failures
         avgResponseTime: totalRequests > 0 ? Math.round(totalResponseTime / totalRequests) : 0,
         uniqueUsers: uniqueUsers.size,
         uniqueEndpoints: uniqueEndpoints.size,

@@ -46,6 +46,13 @@ const usageLogger = async (req, res, next) => {
     const shouldSkip = skipPaths.some(path => req.path.includes(path));
 
     if (!shouldSkip) {
+      // Categorize errors
+      const statusCode = res.statusCode;
+      const isError = statusCode >= 400;
+      const isAuthError = statusCode === 401 || statusCode === 403;
+      const isClientError = statusCode >= 400 && statusCode < 500;
+      const isServerError = statusCode >= 500;
+
       // Log async (don't block response)
       logUsage({
         id: uuidv4(),
@@ -64,7 +71,11 @@ const usageLogger = async (req, res, next) => {
         responseSize,
         queryParams: Object.keys(req.query).length > 0 ? req.query : null,
         apiKey: req.headers['x-api-key'] ? 'present' : null,
-        error: res.statusCode >= 400 ? true : false,
+        error: isError,
+        errorType: isError ? (isAuthError ? 'auth' : isClientError ? 'client' : 'server') : null,
+        isAuthError,
+        isClientError,
+        isServerError,
       }).catch(err => {
         console.error('Error logging usage:', err);
       });

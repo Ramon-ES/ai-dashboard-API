@@ -14,7 +14,8 @@
       "Bash(npm start)",
       "Bash(node:*)",
       "Bash(npx kill-port:*)",
-      "Bash(start msedge \"http://localhost:3004/analytics\")"
+      "Bash(start msedge \"http://localhost:3004/analytics\")",
+      "Bash(start msedge \"https://webplatform.enversedstudios.com/ai-dashboard/analytics/\")"
     ],
     "deny": [],
     "ask": []

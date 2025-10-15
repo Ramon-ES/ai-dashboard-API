@@ -300,9 +300,19 @@
           <div class="subtitle" id="dateRange">-</div>
         </div>
         <div class="stat-card">
-          <h3>Error Rate</h3>
-          <div class="value" id="errorRate">-</div>
-          <div class="subtitle"><span id="totalErrors">-</span> errors</div>
+          <h3>API Error Rate</h3>
+          <div class="value" id="meaningfulErrorRate">-</div>
+          <div class="subtitle">Excludes auth failures</div>
+        </div>
+        <div class="stat-card">
+          <h3>Server Errors</h3>
+          <div class="value" id="serverErrors">-</div>
+          <div class="subtitle">5xx errors (critical)</div>
+        </div>
+        <div class="stat-card">
+          <h3>Auth Failures</h3>
+          <div class="value" id="authErrors">-</div>
+          <div class="subtitle">401/403 errors</div>
         </div>
         <div class="stat-card">
           <h3>Avg Response Time</h3>
@@ -313,11 +323,6 @@
           <h3>Unique Users</h3>
           <div class="value" id="uniqueUsers">-</div>
           <div class="subtitle">active users</div>
-        </div>
-        <div class="stat-card">
-          <h3>Unique Endpoints</h3>
-          <div class="value" id="uniqueEndpoints">-</div>
-          <div class="subtitle">API endpoints</div>
         </div>
       </div>
 
@@ -511,11 +516,11 @@
 
     function updateDashboardStats(data) {
       document.getElementById('totalRequests').textContent = data.totalRequests.toLocaleString();
-      document.getElementById('errorRate').textContent = data.errorRate;
-      document.getElementById('totalErrors').textContent = data.totalErrors.toLocaleString();
+      document.getElementById('meaningfulErrorRate').textContent = data.meaningfulErrorRate || '0%';
+      document.getElementById('serverErrors').textContent = (data.serverErrors || 0).toLocaleString();
+      document.getElementById('authErrors').textContent = (data.authErrors || 0).toLocaleString();
       document.getElementById('avgResponseTime').textContent = data.avgResponseTime + 'ms';
       document.getElementById('uniqueUsers').textContent = data.uniqueUsers.toLocaleString();
-      document.getElementById('uniqueEndpoints').textContent = data.uniqueEndpoints.toLocaleString();
 
       const start = new Date(data.dateRange.start || Date.now() - 24*60*60*1000);
       const end = new Date(data.dateRange.end);
